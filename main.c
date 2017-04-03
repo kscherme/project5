@@ -28,7 +28,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	printf("page fault on page #%d\n",page);
 
 
-	exit(1);
+	//exit(1);
 }
 
 int main( int argc, char *argv[] )
