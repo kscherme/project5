@@ -31,9 +31,9 @@ void page_fault_handler( struct page_table *pt, int page )
 	// Check if page is already loaded
 	int frame;
 	int bits;
-	// page_table_get_entry( pt, page, &frame, &bits );
-	// printf("frame: %d\n", frame);
-	// printf("bits: %d\n", bits);
+	page_table_get_entry( pt, page, &frame, &bits );
+	printf("frame: %d\n", frame);
+	printf("bits: %d\n", bits);
 
 	// Check if page needs write permission
 
