@@ -59,14 +59,14 @@ void page_fault_handler( struct page_table *pt, int page )
 	// If no open frame
 	if (found_frame == 0) {
 		if (MODE == RAND) {
-			break;
+			printf("hi");
 		}
 	}
 
 	// Read in page from disk
 	char *physmem = page_table_get_physmem(pt);
 	//disk_read(DISK, page, open_frame*PAGE_SIZE + physmem);
-	disk_read(DISK, page, &physmem[open_frame*FRAME_SIZE]);
+	disk_read(DISK, page, &physmem[open_frame*PAGE_SIZE]);
 
 	// Set page table entry
 	page_table_set_entry(pt, page, open_frame, PROT_READ);
