@@ -36,12 +36,12 @@ void page_fault_handler( struct page_table *pt, int page )
 	// printf("bits: %d\n", bits);
 	// If page has no permissions, set read permission and return
 	if (bits == 0) {
-		page_table_set_entry(pt, page, frame, PROC_READ);
+		page_table_set_entry(pt, page, frame, PROT_READ);
 		return;
 	}
 	// If page only has read permission, set write permission and continue
 	else if (bits == 1) {
-		page_table_set_entry(pt, page, frame, PROC_READ|PROC_WRITE);
+		page_table_set_entry(pt, page, frame, PROT_READ|PROT_WRITE);
 	}
 
 	// Check if page needs write permission
