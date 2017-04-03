@@ -20,6 +20,7 @@ typedef enum {RAND, FIFO, LRU, CUSTOM} mode_t;
 // Global Variables
 mode_t MODE;
 int *FRAME_ARRAY;
+struct disk *DISK;
 
 void page_fault_handler( struct page_table *pt, int page )
 {
@@ -61,7 +62,7 @@ void page_fault_handler( struct page_table *pt, int page )
 
 	// Read in page from disk
 	physmem = page_table_get_physmem(pt);
-	disk_read(disk, page, open_frame*PAGE_SIZE + physmem);
+	disk_read(DISK, page, open_frame*PAGE_SIZE + physmem);
 
 	// Set page table entry
 	page_table_set_entry(pt, page, open_frame, PROT_READ);
@@ -130,8 +131,8 @@ int main( int argc, char *argv[] )
 	const char *program = argv[4];
 
 	// Create virtual disk
-	struct disk *disk = disk_open("myvirtualdisk",npages);
-	if(!disk) {
+	DISK = disk_open("myvirtualdisk",npages);
+	if(!DISK) {
 		fprintf(stderr,"couldn't create virtual disk: %s\n",strerror(errno));
 		return 1;
 	}
@@ -165,7 +166,7 @@ int main( int argc, char *argv[] )
 	}
 
 	page_table_delete(pt);
-	disk_close(disk);
+	disk_close(DISK);
 
 	return 0;
 }
