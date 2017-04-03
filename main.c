@@ -23,7 +23,7 @@ int *FRAME_ARRAY;
 
 void page_fault_handler( struct page_table *pt, int page )
 {
-	page_table_set_entry(pt,page,page,(PROT_READ|PROT_WRITE));
+	//page_table_set_entry(pt,page,page,(PROT_READ|PROT_WRITE));
 	// page_table_print(pt);
 
 	// Print the page # of the fault
@@ -33,43 +33,49 @@ void page_fault_handler( struct page_table *pt, int page )
 	int frame;
 	int bits;
 	page_table_get_entry( pt, page, &frame, &bits );
-	printf("frame: %d\n", frame);
-	printf("bits: %d\n", bits);
+	// printf("frame: %d\n", frame);
+	// printf("bits: %d\n", bits);
 	// If page has no permissions, set read permission and return
 	// if (bits == 0) {
 	// 	page_table_set_entry(pt, page, frame, PROT_READ);
 	// 	return;
 	// }
-	// // If page only has read permission, set write permission and continue
-	// else if (bits == 1) {
-	// 	page_table_set_entry(pt, page, frame, PROT_READ|PROT_WRITE);
-	// 	return;
-	// }
+	// If page only has read permission, set write permission and continue
+	if (bits == 1) {
+		page_table_set_entry(pt, page, frame, PROT_READ|PROT_WRITE);
+		return;
+	}
 
-	// // Check for an open frame
-	// int nframes = page_table_get_nframes(pt);
-	// int i;
-	// int open_frame = -1;
-	// for (i=0; i < nframes; i++) {
-	// 	if (FRAME_ARRAY[i] == -1) {
-	// 		open_frame = i;
-	// 		break;
-	// 	}
-	// }
+	// Check for an open frame
+	int nframes = page_table_get_nframes(pt);
+	int i;
+	int open_frame = -1;
+	for (i=0; i < nframes; i++) {
+		if (FRAME_ARRAY[i] == -1) {
+			open_frame = i;
+			break;
+		}
+	}
 
-	// // If no open frame
+	// If no open frame
 
-	// // Read in page from disk
-	// physmem = page_table_get_physmem(pt);
-	// disk_read(disk, page, open_frame*PAGE_SIZE + physmem);
+	// Read in page from disk
+	physmem = page_table_get_physmem(pt);
+	disk_read(disk, page, open_frame*PAGE_SIZE + physmem);
 
-	// // Set page table entry
-	// page_table_set_entry(pt, page, open_frame, PROT_READ);
-	// FRAME_ARRAY[open_frame] = page;
+	// Set page table entry
+	page_table_set_entry(pt, page, open_frame, PROT_READ);
+	FRAME_ARRAY[open_frame] = page;
+
+	// Print frame array
+	int x;
+	for (x=0; x< FRAME_ARRAY.size(); x++){
+		printf("%d\n", FRAME_ARRAY[x]);
+	}
 
 
 
-	// //exit(1);
+	//exit(1);
 }
 
 int main( int argc, char *argv[] )
