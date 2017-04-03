@@ -19,6 +19,7 @@ typedef enum {RAND, FIFO, LRU, CUSTOM} mode_t;
 
 // Global Variables
 mode_t MODE;
+int *FRAME_ARRAY;
 
 void page_fault_handler( struct page_table *pt, int page )
 {
@@ -44,15 +45,24 @@ void page_fault_handler( struct page_table *pt, int page )
 		page_table_set_entry(pt, page, frame, PROT_READ|PROT_WRITE);
 	}
 
-	// Check if page needs write permission
-
 	// Check for an open frame
+	int nframes = page_table_get_nframes(pt);
+	int i;
+	int open_frame = -1;
+	for (int i=0; i < nframes; i++) {
+		if (FRAME_ARRAY[i] == -1) {
+			open_frame = i;
+			break;
+		}
+	}
 
 	// If no open frame
 
 	// Read in page from disk
 
 	// Set page table entry
+	page_table_set_entry(pt, page, open_frame, PROT_READ);
+	FRAME_ARRAY[open_frame] = page;
 
 
 
@@ -78,6 +88,16 @@ int main( int argc, char *argv[] )
 		printf("ERROR: nframes must be greater than 0\n");
 		return 1;
 	}
+
+	// Make frame table array
+	int temp_array[nframes];
+	FRAME_ARRAY = temp_array;
+
+	int i;
+	for(i=0; i < nframes; i++){
+		FRAME_ARRAY[i] = -1;
+	}
+
 
 	// Handles page replacement algorithm
 	if( strcmp(argv[3], "rand") == 0) {
