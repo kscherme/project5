@@ -43,6 +43,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	// If page only has read permission, set write permission and continue
 	else if (bits == 1) {
 		page_table_set_entry(pt, page, frame, PROT_READ|PROT_WRITE);
+		return;
 	}
 
 	// Check for an open frame
@@ -59,6 +60,8 @@ void page_fault_handler( struct page_table *pt, int page )
 	// If no open frame
 
 	// Read in page from disk
+	physmem = page_table_get_physmem(pt);
+	disk_read(disk, page, open_frame*PAGE_SIZE + physmem);
 
 	// Set page table entry
 	page_table_set_entry(pt, page, open_frame, PROT_READ);
