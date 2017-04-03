@@ -23,7 +23,7 @@ mode_t MODE;
 void page_fault_handler( struct page_table *pt, int page )
 {
 	page_table_set_entry(pt,page,page,(PROT_READ|PROT_WRITE));
-	page_table_print(pt);
+	//page_table_print(pt);
 	// Print the page # of the fault
 	printf("page fault on page #%d\n",page);
 
