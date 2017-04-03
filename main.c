@@ -61,7 +61,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	// If no open frame
 
 	// Read in page from disk
-	physmem = page_table_get_physmem(pt);
+	char *physmem = page_table_get_physmem(pt);
 	disk_read(DISK, page, open_frame*PAGE_SIZE + physmem);
 
 	// Set page table entry
