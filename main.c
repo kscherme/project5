@@ -22,10 +22,29 @@ mode_t MODE;
 
 void page_fault_handler( struct page_table *pt, int page )
 {
-	page_table_set_entry(pt,page,page,(PROT_READ|PROT_WRITE));
-	//page_table_print(pt);
+	// page_table_set_entry(pt,page,page,(PROT_READ|PROT_WRITE));
+	// page_table_print(pt);
+
 	// Print the page # of the fault
 	printf("page fault on page #%d\n",page);
+
+	// Check if page is already loaded
+	int frame;
+	int bits;
+	page_table_get_entry( pt, page, &frame, &bits );
+	printf("frame: \d\n", frame);
+	printf("bits: \d\n", bits);
+
+	// Check if page needs write permission
+
+	// Check for an open frame
+
+	// If no open frame
+
+	// Read in page from disk
+
+	// Set page table entry
+
 
 
 	//exit(1);
