@@ -69,7 +69,7 @@ void page_fault_handler( struct page_table *pt, int page )
 
 	// Print frame array
 	int x;
-	for (x=0; x< FRAME_ARRAY.size(); x++){
+	for (x=0; x< FRAME_ARRAY.length(); x++){
 		printf("%d\n", FRAME_ARRAY[x]);
 	}
 
