@@ -22,7 +22,7 @@ mode_t MODE;
 
 void page_fault_handler( struct page_table *pt, int page )
 {
-	page_table_set_entry(pt,page,page,(PROT_WRITE));
+	// page_table_set_entry(pt,page,page,(PROT_WRITE));
 	// page_table_print(pt);
 
 	// Print the page # of the fault
@@ -32,8 +32,17 @@ void page_fault_handler( struct page_table *pt, int page )
 	int frame;
 	int bits;
 	page_table_get_entry( pt, page, &frame, &bits );
-	printf("frame: %d\n", frame);
-	printf("bits: %d\n", bits);
+	// printf("frame: %d\n", frame);
+	// printf("bits: %d\n", bits);
+	// If page has no permissions, set read permission and return
+	if (bits == 0) {
+		page_table_set_entry(pt, page, frame, PROC_READ);
+		return;
+	}
+	// If page only has read permission, set write permission and continue
+	else if (bits == 1) {
+		page_table_set_entry(pt, page, frame, PROC_READ|PROC_WRITE);
+	}
 
 	// Check if page needs write permission
 
