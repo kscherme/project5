@@ -49,7 +49,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	int nframes = page_table_get_nframes(pt);
 	int i;
 	int open_frame = -1;
-	for (int i=0; i < nframes; i++) {
+	for (i=0; i < nframes; i++) {
 		if (FRAME_ARRAY[i] == -1) {
 			open_frame = i;
 			break;
