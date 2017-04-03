@@ -36,11 +36,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	page_table_get_entry( pt, page, &frame, &bits );
 	// printf("frame: %d\n", frame);
 	// printf("bits: %d\n", bits);
-	// If page has no permissions, set read permission and return
-	// if (bits == 0) {
-	// 	page_table_set_entry(pt, page, frame, PROT_READ);
-	// 	return;
-	// }
+
 	// If page only has read permission, set write permission and continue
 	if (bits == 1) {
 		page_table_set_entry(pt, page, frame, PROT_READ|PROT_WRITE);
@@ -51,18 +47,26 @@ void page_fault_handler( struct page_table *pt, int page )
 	int nframes = page_table_get_nframes(pt);
 	int i;
 	int open_frame = -1;
+	int found_frame = 0;
 	for (i=0; i < nframes; i++) {
 		if (FRAME_ARRAY[i] == -1) {
 			open_frame = i;
+			found_frame = 1;
 			break;
 		}
 	}
 
 	// If no open frame
+	if (found_frame == 0) {
+		if (MODE == RAND) {
+			break;
+		}
+	}
 
 	// Read in page from disk
 	char *physmem = page_table_get_physmem(pt);
-	disk_read(DISK, page, open_frame*PAGE_SIZE + physmem);
+	//disk_read(DISK, page, open_frame*PAGE_SIZE + physmem);
+	disk_read(DISK, page, &physmem[open_frame*FRAME_SIZE]);
 
 	// Set page table entry
 	page_table_set_entry(pt, page, open_frame, PROT_READ);
