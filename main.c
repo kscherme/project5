@@ -111,10 +111,10 @@ void page_fault_handler( struct page_table *pt, int page )
 	FRAME_ARRAY[open_frame] = page;
 
 	// Print frame array
-	int x;
-	for (x=0; x< nframes; x++){
-		printf("%d\n", FRAME_ARRAY[x]);
-	}
+	// int x;
+	// for (x=0; x< nframes; x++){
+	// 	printf("%d\n", FRAME_ARRAY[x]);
+	// }
 	//page_table_print(pt);
 	printf("\n\n");
 }
