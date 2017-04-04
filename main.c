@@ -21,7 +21,8 @@ typedef enum {RAND, FIFO, CUSTOM} mode_t;
 mode_t MODE;
 int *FRAME_ARRAY;
 struct disk *DISK;
-int first_in_frame;
+int FIRST_IN_F;
+int *WRITTEN_TO;
 
 int PAGE_FAULTS;
 int DISK_READS;
@@ -45,6 +46,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	// If page only has read permission, set write permission and continue
 	if (bits != 0) {
 		page_table_set_entry(pt, page, frame, bits|PROT_WRITE);
+		WRITTEN_TO[frame] = 0;
 		return;
 	}
 
@@ -69,13 +71,20 @@ void page_fault_handler( struct page_table *pt, int page )
 				break;
 			case FIFO:
 				// Replace first in frame
-				open_frame = first_in_frame;
-				first_in_frame = (first_in_frame + 1) % nframes;
+				open_frame = FIRST_IN_FRAME;
+				FIRST_IN_FRAME = (FIRST_IN_FRAME + 1) % nframes;
 				break;
 			case CUSTOM:
-				// Use fifo 
-				open_frame = first_in_frame;
-				first_in_frame = (first_in_frame + 1) % nframes;
+				// Use fifo but skip if it was recently written to
+				open_frame = FIRST_IN_FRAME;
+
+				while (WRITTEN_TO[open_frame] == 0) {
+					WRITTEN_TO[open_frame] = -1;
+					FIRST_IN_FRAME = (FIRST_IN_FRAME + 1) % nframes;
+					open_frame = FIRST_IN_FRAME;					
+				}
+				
+				FIRST_IN_FRAME = (FIRST_IN_FRAME + 1) % nframes;
 				break;
 		}
 
@@ -136,14 +145,16 @@ int main( int argc, char *argv[] )
 	// Make frame table array
 	int temp_array[nframes];
 	FRAME_ARRAY = temp_array;
+	WRITTEN_TO = temp_array;
 
 	int i;
 	for(i=0; i < nframes; i++){
 		FRAME_ARRAY[i] = -1;
+		WRITTEN_TO[i] = -1;
 	}
 
 	// Set first in frame to 0
-	first_in_frame = 0;
+	FIRST_IN_FRAME = 0;
 
 
 	// Handles page replacement algorithm
