@@ -15,7 +15,7 @@ how to use the page table and disk interfaces.
 #include <string.h>
 #include <errno.h>
 
-typedef enum {RAND, FIFO, LRU, CUSTOM} mode_t;
+typedef enum {RAND, FIFO, CUSTOM} mode_t;
 
 // Global Variables
 mode_t MODE;
@@ -23,10 +23,17 @@ int *FRAME_ARRAY;
 struct disk *DISK;
 int first_in_frame;
 
+int PAGE_FAULTS;
+int DISK_READS;
+int DISK_WRITES;
+
 void page_fault_handler( struct page_table *pt, int page )
 {
 	// Print the page # of the fault
-	printf("page fault on page #%d\n",page);
+	//printf("page fault on page #%d\n",page);
+
+	// Add to number of page faults
+	PAGE_FAULTS++;
 
 	// Check if page is already loaded
 	int frame;
@@ -65,7 +72,11 @@ void page_fault_handler( struct page_table *pt, int page )
 				open_frame = first_in_frame;
 				first_in_frame = (first_in_frame + 1) % nframes;
 				break;
-
+			case CUSTOM:
+				// Use fifo 
+				open_frame = first_in_frame;
+				first_in_frame = (first_in_frame + 1) % nframes;
+				break;
 		}
 
 
@@ -75,6 +86,7 @@ void page_fault_handler( struct page_table *pt, int page )
 		// If it is dirty, write back onto the disk
 		if (bits == 2) {
 			disk_write(DISK, FRAME_ARRAY[open_frame], &physmem[open_frame*PAGE_SIZE]);
+			DISK_WRITES++;
 		}
 
 		// Change the old page table entry
@@ -83,6 +95,7 @@ void page_fault_handler( struct page_table *pt, int page )
 
 	// Read in page from disk
 	disk_read(DISK, page, &physmem[open_frame*PAGE_SIZE]);
+	DISK_READS++;
 
 	// Set page table entry
 	page_table_set_entry(pt, page, open_frame, PROT_READ);
@@ -99,9 +112,14 @@ int main( int argc, char *argv[] )
 {
 	// Parse command line arguments
 	if(argc!=5) {
-		printf("use: virtmem <npages> <nframes> <rand|fifo|lru|custom> <sort|scan|focus>\n");
+		printf("use: virtmem <npages> <nframes> <rand|fifo|custom> <sort|scan|focus>\n");
 		return 1;
 	}
+
+	// Initizalize summary components to 0
+	PAGE_FAULTS = 0;
+	DISK_READS = 0;
+	DISK_WRITES = 0;
 
 	// Handles number of pages and frames
 	int npages = atoi(argv[1]);
@@ -135,9 +153,6 @@ int main( int argc, char *argv[] )
 	else if( strcmp(argv[3], "fifo") == 0) {
 		MODE = FIFO;
 	} 
-	else if( strcmp(argv[3], "lru") == 0) {
-		MODE = LRU;
-	}
 	else if( strcmp(argv[3], "custom") == 0) {
 		MODE = CUSTOM;
 	}
@@ -166,9 +181,6 @@ int main( int argc, char *argv[] )
 	// Pointer to the start of virtual memory associated with the page table
 	char *virtmem = page_table_get_virtmem(pt);
 
-	// Pointer to the start of physical memory associated with the page table
-	char *physmem = page_table_get_physmem(pt);
-
 	// Start program
 	if(!strcmp(program,"sort")) {
 		sort_program(virtmem,npages*PAGE_SIZE);
@@ -186,6 +198,9 @@ int main( int argc, char *argv[] )
 
 	page_table_delete(pt);
 	disk_close(DISK);
+
+	//Print summary
+	printf("Number of page faults: %d\nNumber of disk reads: %d\nNumber of disk writes: %d\n", PAGE_FAULTS, DISK_READS, DISK_WRITES);
 
 	return 0;
 }
