@@ -46,7 +46,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	// If page only has read permission, set write permission and continue
 	if (bits != 0) {
 		page_table_set_entry(pt, page, frame, bits|PROT_WRITE);
-		//WRITTEN_TO[frame] = 0;
+		WRITTEN_TO[frame] = 0;
 		return;
 	}
 
@@ -144,13 +144,14 @@ int main( int argc, char *argv[] )
 
 	// Make frame table array
 	int temp_array[nframes];
+	int temp_array2[nframes];
 	FRAME_ARRAY = temp_array;
-	//WRITTEN_TO = temp_array;
+	WRITTEN_TO = temp_array2;
 
 	int i;
 	for(i=0; i < nframes; i++){
 		FRAME_ARRAY[i] = -1;
-		//WRITTEN_TO[i] = -1;
+		WRITTEN_TO[i] = -1;
 	}
 
 	// Set first in frame to 0
