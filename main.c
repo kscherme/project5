@@ -41,11 +41,11 @@ void page_fault_handler( struct page_table *pt, int page )
 	int bits;
 	page_table_get_entry( pt, page, &frame, &bits );
 	// printf("frame: %d\n", frame);
-	// printf("bits: %d\n", bits);
+	printf("bits: %d\n", bits);
 
 	// If page only has read permission, set write permission and continue
 	printf("%d\n", (bits & PROT_WRITE));
-	if ((bits & PROT_WRITE) != 1) {
+	if ((bits & PROT_WRITE) == 0) {
 		page_table_set_entry(pt, page, frame, bits|PROT_WRITE);
 		if (MODE == CUSTOM) WRITTEN_TO[frame] = 0;
 		return;
