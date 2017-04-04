@@ -84,7 +84,7 @@ void page_fault_handler( struct page_table *pt, int page )
 		page_table_get_entry(pt, FRAME_ARRAY[open_frame], &frame, &bits);
 
 		// If it is dirty, write back onto the disk
-		if (bits == 3) {
+		if (bits & PROT_WRITE) {
 			disk_write(DISK, FRAME_ARRAY[open_frame], &physmem[open_frame*PAGE_SIZE]);
 			DISK_WRITES++;
 		}
@@ -148,7 +148,6 @@ int main( int argc, char *argv[] )
 
 	// Handles page replacement algorithm
 	if( strcmp(argv[3], "rand") == 0) {
-		srand48(38290);
 		MODE = RAND;
 	}
 	else if( strcmp(argv[3], "fifo") == 0) {
