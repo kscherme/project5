@@ -57,7 +57,7 @@ void sort_program( char *data, int length )
 	srand48(4856);
 
 	for(i=0;i<length;i++) {
-		printf("%d\n", data[i]);
+		//printf("%d\n", data[i]);
 		data[i] = lrand48();
 	}
 
