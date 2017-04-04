@@ -21,7 +21,7 @@ typedef enum {RAND, FIFO, CUSTOM} mode_t;
 mode_t MODE;
 int *FRAME_ARRAY;
 struct disk *DISK;
-int FIRST_IN_F;
+int FIRST_IN_FRAME;
 int *WRITTEN_TO;
 
 int PAGE_FAULTS;
@@ -83,7 +83,7 @@ void page_fault_handler( struct page_table *pt, int page )
 					FIRST_IN_FRAME = (FIRST_IN_FRAME + 1) % nframes;
 					open_frame = FIRST_IN_FRAME;					
 				}
-				
+
 				FIRST_IN_FRAME = (FIRST_IN_FRAME + 1) % nframes;
 				break;
 		}
