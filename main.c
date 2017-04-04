@@ -41,10 +41,9 @@ void page_fault_handler( struct page_table *pt, int page )
 	int bits;
 	page_table_get_entry( pt, page, &frame, &bits );
 	// printf("frame: %d\n", frame);
-	printf("bits: %d\n", bits);
+	//printf("bits: %d\n", bits);
 
 	// If page only has read permission, set write permission and continue
-	printf("%d\n", (bits & !PROT_WRITE));
 	if (bits != 0) {
 		page_table_set_entry(pt, page, frame, bits|PROT_WRITE);
 		if (MODE == CUSTOM) WRITTEN_TO[frame] = 0;
@@ -112,11 +111,11 @@ void page_fault_handler( struct page_table *pt, int page )
 	FRAME_ARRAY[open_frame] = page;
 
 	// Print frame array
-	// int x;
-	// for (x=0; x< nframes; x++){
-	// 	printf("%d\n", FRAME_ARRAY[x]);
-	// }
-	page_table_print(pt);
+	int x;
+	for (x=0; x< nframes; x++){
+		printf("%d\n", FRAME_ARRAY[x]);
+	}
+	//page_table_print(pt);
 	printf("\n\n");
 }
 
@@ -195,6 +194,8 @@ int main( int argc, char *argv[] )
 
 	// Pointer to the start of virtual memory associated with the page table
 	char *virtmem = page_table_get_virtmem(pt);
+
+	page_table_print(pt);
 
 	// Start program
 	if(!strcmp(program,"sort")) {
