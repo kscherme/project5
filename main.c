@@ -47,25 +47,35 @@ void page_fault_handler( struct page_table *pt, int page )
 	int nframes = page_table_get_nframes(pt);
 	int i;
 	int open_frame = -1;
-	int found_frame = 0;
 	for (i=0; i < nframes; i++) {
 		if (FRAME_ARRAY[i] == -1) {
 			open_frame = i;
-			found_frame = 1;
 			break;
 		}
 	}
 
 	// If no open frame
-	if (found_frame == 0) {
-		if (MODE == RAND) {
-			printf("hi");
+	char *physmem = page_table_get_physmem(pt);
+	if (open_frame == -1) {
+		switch(MODE) {
+			case RAND: 
+				// Replace a random frame
+				open_frame = lrand48() % nframes;
+				break;
 		}
+
+		// Check if the old page is dirty
+		page_table_get_entry(pt, FRAME_ARRAY[open_frame], &frame, &bits);
+		// If it is dirty, write back onto the disk
+		if (bits == 2) {
+			disk_write(DISK, FRAME_ARRAY[open_frame], &physmem[open_frame*PAGE_SIZE]);
+		}
+
+		// Change the old page table entry
+		page_table_set_entry(pt, FRAME_ARRAY[open_frame], 0, 0);
 	}
 
 	// Read in page from disk
-	char *physmem = page_table_get_physmem(pt);
-	//disk_read(DISK, page, open_frame*PAGE_SIZE + physmem);
 	disk_read(DISK, page, &physmem[open_frame*PAGE_SIZE]);
 
 	// Set page table entry
@@ -73,10 +83,10 @@ void page_fault_handler( struct page_table *pt, int page )
 	FRAME_ARRAY[open_frame] = page;
 
 	// Print frame array
-	int x;
-	for (x=0; x< nframes; x++){
-		printf("%d\n", FRAME_ARRAY[x]);
-	}
+	// int x;
+	// for (x=0; x< nframes; x++){
+	// 	printf("%d\n", FRAME_ARRAY[x]);
+	// }
 
 
 
