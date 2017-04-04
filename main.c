@@ -64,6 +64,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	if (open_frame == -1) {
 		switch(MODE) {
 			case RAND: 
+				srand48(38290);
 				// Replace a random frame
 				open_frame = lrand48() % nframes;
 				break;
