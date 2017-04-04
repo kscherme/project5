@@ -63,6 +63,7 @@ void sort_program( char *data, int length )
 	qsort(data,length,1,compare_bytes);
 
 	for(i=0;i<length;i++) {
+		printf("%d\n", data[i]);
 		total += data[i];
 	}
 
