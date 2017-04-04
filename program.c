@@ -57,14 +57,12 @@ void sort_program( char *data, int length )
 	srand48(4856);
 
 	for(i=0;i<length;i++) {
-		//printf("%d\n", data[i]);
 		data[i] = lrand48();
 	}
 
 	qsort(data,length,1,compare_bytes);
 
 	for(i=0;i<length;i++) {
-		//printf("%d\n", data[i]);
 		total += data[i];
 	}
 

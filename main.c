@@ -21,12 +21,10 @@ typedef enum {RAND, FIFO, LRU, CUSTOM} mode_t;
 mode_t MODE;
 int *FRAME_ARRAY;
 struct disk *DISK;
+int first_in_frame;
 
 void page_fault_handler( struct page_table *pt, int page )
 {
-	//page_table_set_entry(pt,page,page,(PROT_READ|PROT_WRITE));
-	// page_table_print(pt);
-
 	// Print the page # of the fault
 	printf("page fault on page #%d\n",page);
 
@@ -62,10 +60,18 @@ void page_fault_handler( struct page_table *pt, int page )
 				// Replace a random frame
 				open_frame = lrand48() % nframes;
 				break;
+			case FIFO:
+				// Replace first in frame
+				open_frame = first_in_frame;
+				first_in_frame = (first_in_frame + 1) % nframes;
+				break;
+
 		}
+
 
 		// Check if the old page is dirty
 		page_table_get_entry(pt, FRAME_ARRAY[open_frame], &frame, &bits);
+
 		// If it is dirty, write back onto the disk
 		if (bits == 2) {
 			disk_write(DISK, FRAME_ARRAY[open_frame], &physmem[open_frame*PAGE_SIZE]);
@@ -87,10 +93,6 @@ void page_fault_handler( struct page_table *pt, int page )
 	// for (x=0; x< nframes; x++){
 	// 	printf("%d\n", FRAME_ARRAY[x]);
 	// }
-
-
-
-	//exit(1);
 }
 
 int main( int argc, char *argv[] )
@@ -121,6 +123,9 @@ int main( int argc, char *argv[] )
 	for(i=0; i < nframes; i++){
 		FRAME_ARRAY[i] = -1;
 	}
+
+	// Set first in frame to 0
+	first_in_frame = 0;
 
 
 	// Handles page replacement algorithm
