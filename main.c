@@ -116,7 +116,7 @@ void page_fault_handler( struct page_table *pt, int page )
 	// 	printf("%d\n", FRAME_ARRAY[x]);
 	// }
 	//page_table_print(pt);
-	printf("\n\n");
+	//printf("\n\n");
 }
 
 int main( int argc, char *argv[] )
@@ -195,7 +195,7 @@ int main( int argc, char *argv[] )
 	// Pointer to the start of virtual memory associated with the page table
 	char *virtmem = page_table_get_virtmem(pt);
 
-	page_table_print(pt);
+	//page_table_print(pt);
 
 	// Start program
 	if(!strcmp(program,"sort")) {
