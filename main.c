@@ -145,10 +145,8 @@ int main( int argc, char *argv[] )
 	}
 
 	// Make frame table array
-	int temp_array[nframes];
-	int temp_array2[nframes];
-	FRAME_ARRAY = temp_array;
-	WRITTEN_TO = temp_array2;
+	FRAME_ARRAY = (int *) malloc (nframes * sizeof(int));
+	WRITTEN_TO = (int *) malloc (nframes * sizeof(int));
 
 	int i;
 	for(i=0; i < nframes; i++){
