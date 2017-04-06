@@ -135,8 +135,8 @@ int main( int argc, char *argv[] )
 	// Handles number of pages and frames
 	int npages = atoi(argv[1]);
 	int nframes = atoi(argv[2]);
-	if (npages <= 0){
-		printf("ERROR: npages must be greater than 0\n");
+	if (npages <= 3){
+		printf("ERROR: npages must be greater than 3\n");
 		return 1;
 	}
 	else if(nframes <=0){
