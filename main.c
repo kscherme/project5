@@ -69,7 +69,7 @@ void page_fault_handler( struct page_table *pt, int page )
 		switch(MODE) {
 			case RAND: 
 				// Replace a random frame
-				open_frame = lrand48() % nframes;
+				open_frame = rand() % nframes;
 				break;
 			case FIFO:
 				// Replace first in frame
@@ -125,10 +125,9 @@ int main( int argc, char *argv[] )
 {
 
 	// time seed
-	time_t t1;
-	(void) time(&t1);
-	srand48((long) t1);
-	
+	time_t t;
+	srand((unsigned) time(&t));
+
 	// Parse command line arguments
 	if(argc!=5) {
 		printf("use: virtmem <npages> <nframes> <rand|fifo|custom> <sort|scan|focus>\n");
