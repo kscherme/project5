@@ -31,6 +31,7 @@ int DISK_WRITES;
 
 void page_fault_handler( struct page_table *pt, int page )
 {
+
 	// Print the page # of the fault
 	//printf("page fault on page #%d\n",page);
 
@@ -122,6 +123,12 @@ void page_fault_handler( struct page_table *pt, int page )
 
 int main( int argc, char *argv[] )
 {
+
+	// time seed
+	time_t t1;
+	(void) time(&t1);
+	srand48((long) t1);
+	
 	// Parse command line arguments
 	if(argc!=5) {
 		printf("use: virtmem <npages> <nframes> <rand|fifo|custom> <sort|scan|focus>\n");
