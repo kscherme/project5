@@ -14,6 +14,7 @@ how to use the page table and disk interfaces.
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 typedef enum {RAND, FIFO, CUSTOM} mode_t;
 
