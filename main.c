@@ -199,7 +199,7 @@ int main( int argc, char *argv[] )
 		focus_program(virtmem,npages*PAGE_SIZE);
 
 	} else {
-		fprintf(stderr,"unknown program: %s\n",argv[3]);
+		fprintf(stderr,"unknown program: %s\n",argv[4]);
 		return 1;
 	}
 
